@@ -1,0 +1,324 @@
+openapi: 3.1.0
+info:
+  contact:
+    email: contact@example.com
+    url: http://example.com/contact
+  description: |
+    This is an **example** API to demonstrate features of the OpenAPI specification.
+    # Introduction
+    This API definition is intended to to be a good starting point for describing your API in [OpenAPI/Swagger format](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md).
+    It also demonstrates features of the [create-openapi-repo](https://github.com/Redocly/create-openapi-repo) tool and the [Redoc](https://github.com/Redocly/Redoc) documentation engine. Beyond the standard OpenAPI syntax, we use a few  [vendor extensions](https://github.com/Redocly/Redoc/blob/master/docs/redoc-vendor-extensions.md).
+    # OpenAPI Specification
+    The goal of The OpenAPI Specification is to define a standard, language-agnostic interface to REST APIs which allows both humans and computers to discover and understand the capabilities of the service without access to source code, documentation, or through network traffic inspection. When properly defined via OpenAPI, a consumer can  understand and interact with the remote service with a minimal amount of implementation logic. Similar to what interfaces have done for lower-level programming, OpenAPI removes the guesswork in calling the service.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: https://example.com/terms/
+  title: Example.com
+  version: 1.0.0
+  x-logo:
+    url: https://redocly.github.io/openapi-template/logo.png
+externalDocs:
+  description: X2X Api Documentation
+  url: http://localhost:4321/docs
+servers:
+- url: "https://{tenant}/api/v1"
+  variables:
+    tenant:
+      default: www
+      description: Your tenant id
+- url: https://example.com/api/v1
+tags:
+- description: Example echo operations.
+  name: Echo
+- description: Operations about users.
+  name: User
+- description: This is a tag description.
+  name: Tag
+paths:
+  /echo:
+    post:
+      description: Receive the exact message you've sent
+      operationId: echo
+      requestBody:
+        content:
+          application/json:
+            schema:
+              example: Hello world!
+              type: string
+          application/xml:
+            schema:
+              example: Hello world!
+              type: string
+        description: Echo payload
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value: Hello world!
+              schema:
+                type: string
+            application/xml:
+              schema:
+                type: string
+            text/csv:
+              schema:
+                type: string
+          description: OK
+          headers:
+            X-Rate-Limit:
+              description: calls per hour allowed by the user
+              explode: false
+              schema:
+                format: int32
+                type: integer
+              style: simple
+            X-Expires-After:
+              $ref: "#/components/headers/ExpiresAfter"
+        "400":
+          description: Unauthorized
+      security:
+      - api_key: []
+      summary: Echo test
+      tags:
+      - Echo
+      x-codeSamples:
+      - lang: C#
+        source: |
+          API.v1.Echo echo = new API.v1.Echo();
+          echo.message = "Hello World!");
+          EchoResponse response = echo.post();
+          if (response.statusCode == HttpStatusCode.Created)
+          {
+            // Success
+          }
+          else
+          {
+            // Something wrong -- check response for errors
+            Console.WriteLine(response.getRawResponse());
+          }
+      - lang: PHP
+        source: |
+          $form = new \API\Entities\Echo();
+          $form->setMessage("Hello World!");
+          try {
+              $pet = $client->echo()->post($form);
+          } catch (UnprocessableEntityException $e) {
+              var_dump($e->getErrors());
+          }
+components:
+  headers:
+    ExpiresAfter:
+      description: date in UTC when token expires
+      explode: false
+      schema:
+        format: date-time
+      style: simple
+  responses:
+    Problem:
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/Problem"
+      description: Problem
+  schemas:
+    Email:
+      description: User email address
+      example: john.smith@example.com
+      format: test
+      type: string
+    User:
+      properties:
+        username:
+          description: User supplied username
+          example: John78
+          minLength: 4
+          type: string
+        firstName:
+          description: User first name
+          example: John
+          minLength: 1
+          type: string
+        lastName:
+          description: User last name
+          example: Smith
+          minLength: 1
+          type: string
+        email:
+          description: User email address
+          example: john.smith@example.com
+          format: test
+          type: string
+    Problem:
+      additionalProperties: true
+      description: "The Problem Details JSON Object [[RFC7807](https://tools.ietf.org/html/rfc7807)]."
+      minProperties: 1
+      properties:
+        type:
+          description: "A URI reference [[RFC3986](https://tools.ietf.org/html/rfc3986)]\
+            \ that identifies the problem type. It should provide human-readable documentation\
+            \ for the problem type. When this member is not present, its value is\
+            \ assumed to be \"about:blank\"."
+          format: uri
+          type: string
+        title:
+          description: "A short, human-readable summary of the problem type. It SHOULD\
+            \ NOT change from occurrence to occurrence of the problem, except for\
+            \ purposes of localization."
+          type: string
+        status:
+          description: The HTTP status code.
+          maximum: 599
+          minimum: 400
+          type: integer
+        detail:
+          description: A human-readable explanation specific to this occurrence of
+            the problem.
+          type: string
+        instance:
+          description: A URI reference that identifies the specific occurrence of
+            the problem.  It may or may not yield further information if dereferenced.
+          type: string
+    Schema:
+      properties:
+        stringProperty:
+          description: Property name's description (type is string)
+          type: string
+        readOnlyStringProperty:
+          description: Notice this only appears in the response.
+          readOnly: true
+          type: string
+        writeOnlyStringProperty:
+          description: Notice this only appears in the request.
+          type: string
+          writeOnly: true
+        minLengthString:
+          description: Property name's description (type is string)
+          minLength: 4
+          type: string
+        maxLengthString:
+          description: Property name's description (type is string)
+          maxLength: 140
+          type: string
+        minAndMaxLengthString:
+          description: Property name's description (type is string)
+          maxLength: 140
+          minLength: 4
+          type: string
+        nullableOrStringProperty:
+          description: Property name's description (type is string or null)
+          nullable: true
+          type: string
+        stringEnumValues:
+          description: Property name's description (type is string)
+          enum:
+          - sample
+          - example
+          - specimen
+          - case
+          - instance
+          - illustration
+          type: string
+        stringDateTime:
+          description: "Property name's description (type is string, format is date-time)"
+          format: date-time
+          type: string
+        stringDate:
+          description: "Property name's description (type is string, format is date-time)"
+          format: date
+          type: string
+        stringEmail:
+          description: "Property name's description (type is string, format is email)"
+          format: email
+          type: string
+        stringIpAddressV4:
+          description: "Property name's description (type is string, format is ipv4\
+            \ address)"
+          format: ipv4
+          type: string
+        stringIpAddressV6:
+          description: "Property name's description (type is string, format is ipv6\
+            \ address)"
+          format: ipv6
+          type: string
+        stringPassword:
+          description: "Property name's description (type is string, format is password)"
+          format: password
+          type: string
+        stringHostname:
+          description: "Property name's description (type is string, format is hostname)"
+          format: hostname
+          type: string
+        stringUri:
+          description: "Property name's description (type is string, format is uri)"
+          format: uri
+          type: string
+        stringUuid:
+          description: "Property name's description (type is string, format is uuid)"
+          format: uuid
+          type: string
+        numberProperty:
+          description: Property name's description (type is number)
+          example: 8
+          type: number
+        numberFloat:
+          description: "Property name's description (type is number, format is float)"
+          format: float
+          type: number
+        numberDouble:
+          description: "Property name's description (type is number, format is double)"
+          format: double
+          type: number
+        numberGreaterThanOrEquals:
+          description: Property name's description (type is number)
+          minimum: 5
+          type: number
+        numberGreaterThan:
+          description: Property name's description (type is number)
+          type: number
+        numberLessThan:
+          description: Property name's description (type is number)
+          type: number
+        numberLessThanOrEquals:
+          description: Property name's description (type is number)
+          maximum: 8
+          type: number
+        numberRange:
+          description: Property name's description (type is number)
+          maximum: 8
+          minimum: 5
+          type: number
+        numberRangeExclusiveMaximum:
+          description: Property name's description (type is number)
+          minimum: 5
+          type: number
+        numberRangeExclusiveMinimumAndMaximum:
+          description: Property name's description (type is number)
+          type: number
+        numberMultipleOf:
+          description: Property name's description (type is number)
+          multipleOf: 2
+          type: number
+        integerType:
+          description: Property name's description (type is integer)
+          type: integer
+        integer32bit:
+          description: "Property name's description (type is integer, format is int32)"
+          format: int32
+          type: integer
+        integer64bit:
+          description: "Property name's description (type is integer, format is int64)"
+          format: int64
+          type: integer
+        booleanProperty:
+          description: Property name's description (type is boolean)
+          type: boolean
+      title: Scalars
+  securitySchemes:
+    api_key:
+      in: header
+      name: api_key
+      type: apiKey
